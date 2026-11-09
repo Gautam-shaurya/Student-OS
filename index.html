@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>StudentOS</title>
+<meta name="theme-color" content="#f4f6ff">
+<script>
+/* Runs before the page paints, so there is no light-mode flash in dark mode */
+try{var t=localStorage.getItem('sos_theme');if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t}catch(e){}
+</script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="logo">student<b>OS</b></div>
+  <nav>
+    <button class="nav active" data-page="dashboard">🏠 <span>Dashboard</span></button>
+    <button class="nav" data-page="tasks">✅ <span>My Tasks</span></button>
+    <button class="nav" data-page="planner">📅 <span>Study Planner</span></button>
+    <button class="nav" data-page="notes">📝 <span>My Notes</span></button>
+    <button class="nav" data-page="timer">⏱️ <span>Focus Timer</span></button>
+    <button class="nav" data-page="progress">📊 <span>My Progress</span></button>
+    <button class="nav" data-page="settings">⚙️ <span>Settings</span></button>
+  </nav>
+</aside>
+
+<main>
+
+<!-- DASHBOARD -->
+<section id="dashboard" class="page active">
+  <div class="page-head">
+    <div><h1 id="welcome"></h1><p class="muted" id="today"></p></div>
+    <button class="icon theme-btn" id="theme-quick" type="button" title="Switch theme" aria-label="Switch theme">🌙</button>
+  </div>
+  <div class="grid stats">
+    <div class="card"><small>Due today</small><h2 id="d-today">0</h2></div>
+    <div class="card"><small>Pending tasks</small><h2 id="d-pending">0</h2></div>
+    <div class="card"><small>Goals done</small><h2 id="d-goals">0/0</h2></div>
+    <div class="card"><small>Study progress</small><h2 id="d-study">0%</h2>
+      <div class="bar"><i id="d-bar"></i></div></div>
+  </div>
+  <div class="grid two">
+    <div class="card">
+      <h3>Daily goals</h3>
+      <form id="f-goals" class="row"><input name="text" placeholder="Add a goal for today"><button class="btn">Add</button></form>
+      <ul class="list" id="l-goals"></ul>
+    </div>
+    <div class="card">
+      <h3>Upcoming assignments</h3>
+      <ul class="list" id="l-upcoming"></ul>
+    </div>
+  </div>
+  <div class="grid quick">
+    <button class="card go" data-go="tasks">✅ Add a task</button>
+    <button class="card go" data-go="planner">📅 Plan a session</button>
+    <button class="card go" data-go="notes">📝 Write a note</button>
+    <button class="card go" data-go="timer">⏱️ Start focusing</button>
+  </div>
+</section>
+
+<!-- TASKS -->
+<section id="tasks" class="page">
+  <h1>My Tasks</h1>
+  <div class="card">
+    <form id="f-tasks" class="row wrap">
+      <input name="title" placeholder="Task title" class="grow">
+      <select name="priority"><option>Low</option><option selected>Medium</option><option>High</option></select>
+      <input type="date" name="due">
+      <button class="btn">Add task</button>
+      <button type="button" class="btn ghost cancel" hidden>Cancel</button>
+    </form>
+  </div>
+  <div class="tabs" id="filters">
+    <button class="tab active" data-f="all">All</button>
+    <button class="tab" data-f="pending">Pending</button>
+    <button class="tab" data-f="completed">Completed</button>
+  </div>
+  <div class="card"><ul class="list" id="l-tasks"></ul></div>
+</section>
+
+<!-- PLANNER -->
+<section id="planner" class="page">
+  <h1>Study Planner</h1>
+  <div class="card">
+    <form id="f-sessions" class="row wrap">
+      <input name="subject" placeholder="Subject" class="grow">
+      <input name="topic" placeholder="Topic" class="grow">
+      <input type="date" name="date">
+      <input type="number" name="duration" min="5" max="600" placeholder="Minutes">
+      <button class="btn">Add session</button>
+      <button type="button" class="btn ghost cancel" hidden>Cancel</button>
+    </form>
+  </div>
+  <div class="card"><ul class="list" id="l-sessions"></ul></div>
+</section>
+
+<!-- NOTES -->
+<section id="notes" class="page">
+  <h1>My Notes</h1>
+  <div class="card">
+    <form id="f-notes" class="col">
+      <input name="title" placeholder="Note title">
+      <textarea name="body" rows="4" placeholder="Write your note..."></textarea>
+      <div class="row"><button class="btn">Save note</button>
+      <button type="button" class="btn ghost cancel" hidden>Cancel</button></div>
+    </form>
+  </div>
+  <input id="search" class="search" placeholder="🔍 Search notes">
+  <div class="grid notes" id="l-notes"></div>
+</section>
+
+<!-- TIMER -->
+<section id="timer" class="page">
+  <h1>Focus Timer</h1>
+  <div class="card center">
+    <div class="tabs">
+      <button class="tab active" data-mode="25">Focus 25:00</button>
+      <button class="tab" data-mode="5">Break 5:00</button>
+    </div>
+    <div class="clock" id="clock">25:00</div>
+    <div class="row center-row">
+      <button class="btn" id="t-start">Start</button>
+      <button class="btn ghost" id="t-pause">Pause</button>
+      <button class="btn ghost" id="t-reset">Reset</button>
+    </div>
+    <p class="muted">Focus rounds finished: <b id="t-count">0</b></p>
+  </div>
+</section>
+
+<!-- PROGRESS -->
+<section id="progress" class="page">
+  <h1>My Progress</h1>
+  <div class="grid stats">
+    <div class="card"><small>Completed tasks</small><h2 id="p-done">0</h2></div>
+    <div class="card"><small>Pending tasks</small><h2 id="p-pend">0</h2></div>
+    <div class="card"><small>Sessions completed</small><h2 id="p-sess">0</h2></div>
+    <div class="card"><small>Focus rounds</small><h2 id="p-focus">0</h2></div>
+  </div>
+  <div class="grid two">
+    <div class="card center"><h3>Tasks</h3><div class="donut" id="donut"><span id="donut-t">0%</span></div></div>
+    <div class="card">
+      <h3>Overview</h3>
+      <p>Tasks completed</p><div class="bar"><i id="b-tasks"></i></div>
+      <p>Study sessions completed</p><div class="bar"><i id="b-sess"></i></div>
+      <p>Goals completed</p><div class="bar"><i id="b-goals"></i></div>
+    </div>
+  </div>
+</section>
+
+<!-- SETTINGS -->
+<section id="settings" class="page">
+  <h1>Settings</h1>
+  <div class="card">
+    <h3>Appearance</h3>
+    <label class="setting"><span><b>Dark mode</b><small>Easier on the eyes in low light</small></span>
+      <input type="checkbox" id="s-dark" class="switch" role="switch"></label>
+  </div>
+</section>
+
+</main>
+
+<div id="toast"></div>
+<footer class="credit">Made with ❤️ by Shaurya</footer>
+<script src="script.js"></script>
+</body>
+</html>
